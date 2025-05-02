@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -9,15 +11,79 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  String? _selectedGender;
+  final _fullNameController = TextEditingController();
+  final _kidNameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
+    _fullNameController.dispose();
+    _kidNameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _register() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    const String apiUrl =
+        'https://yeneta-api.onrender.com/api/parents/register';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'fullName': _fullNameController.text,
+          'kidsName': _kidNameController.text,
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              responseData['message'] ?? 'Registration successful!',
+            ),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, '/login');
+      } else {
+        final responseData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(responseData['message'] ?? 'Registration failed'),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred. Please try again.')),
+      );
+    }
   }
 
   @override
@@ -54,42 +120,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
+                        "Full Name",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      TextFormField(
+                        controller: _fullNameController,
+                        decoration: const InputDecoration(
+                          hintText: "Abebe Kebede",
+                          filled: true,
+                          fillColor: Color(0xFFE0E0E0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(50)),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter your full name";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 15),
+                      const Text(
                         "Kid's Name",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 5),
                       TextFormField(
+                        controller: _kidNameController,
                         decoration: const InputDecoration(
-                          hintText: "Abeba",
-                          filled: true,
-                          fillColor: Color(0xFFE0E0E0), // Light gray background
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please enter the kid's name";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      const Text(
-                        "Father Name",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          hintText: "Abebe",
+                          hintText: "Meron Abebe",
                           filled: true,
                           fillColor: Color(0xFFE0E0E0),
                           border: OutlineInputBorder(
@@ -99,46 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Please enter the father's name";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 15),
-                      const Text(
-                        "Gender",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      DropdownButtonFormField<String>(
-                        value: _selectedGender,
-                        hint: const Text("Select Gender"),
-                        items:
-                            ['Male', 'Female'].map((String gender) {
-                              return DropdownMenuItem<String>(
-                                value: gender,
-                                child: Text(gender),
-                              );
-                            }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedGender = value;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xFFE0E0E0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(50)),
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null) {
-                            return "Please select a gender";
+                            return "Please enter your kid's name";
                           }
                           return null;
                         },
@@ -153,6 +181,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 5),
                       TextFormField(
+                        controller: _emailController,
                         decoration: const InputDecoration(
                           hintText: "example@example.com",
                           filled: true,
@@ -247,19 +276,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              Navigator.pushReplacementNamed(context, '/login');
-                            }
-                          },
-                          child: const Text(
-                            "Register",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
+                          onPressed: _isLoading ? null : _register,
+                          child:
+                              _isLoading
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.black,
+                                  )
+                                  : const Text(
+                                    "Register",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
                         ),
                       ),
                       const SizedBox(height: 20),

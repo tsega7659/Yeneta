@@ -20,14 +20,14 @@ class SplashScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             LottieBuilder.asset("assets/lottie/Animation_splash.json"),
-            const SizedBox(height: 20),
+            const SizedBox(height: 0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "የ",
                   style: TextStyle(
-                    fontSize: 44,
+                    fontSize: 56,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF3E3E3E),
                   ),
@@ -35,7 +35,7 @@ class SplashScreen extends StatelessWidget {
                 Text(
                   "neta",
                   style: TextStyle(
-                    fontSize: 36,
+                    fontSize: 44,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF3E3E3E),
                   ),

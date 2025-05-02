@@ -2,40 +2,39 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:yeneta_flutter/screens/events/event_details_screen.dart';
-import 'package:yeneta_flutter/screens/events/eventhistory.dart';
+import 'package:yeneta_flutter/screens/stories/story_detail_screen.dart';
 
-class EventListScreen extends StatefulWidget {
-  const EventListScreen({super.key});
+class StoryListScreen extends StatefulWidget {
+  const StoryListScreen({super.key});
 
   @override
-  State<EventListScreen> createState() => _EventListScreenState();
+  State<StoryListScreen> createState() => _StoryListScreenState();
 }
 
-class _EventListScreenState extends State<EventListScreen> {
-  List<dynamic> events = [];
+class _StoryListScreenState extends State<StoryListScreen> {
+  List<dynamic> stories = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    fetchEvents();
+    fetchStories();
   }
 
-  Future<void> fetchEvents() async {
+  Future<void> fetchStories() async {
     try {
       final response = await http.get(
-        Uri.parse('https://yeneta-api.onrender.com/api/events'),
+        Uri.parse('https://yeneta-api.onrender.com/api/stories/TERET'),
       );
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
         setState(() {
-          events = responseData['events'] ?? [];
+          stories = responseData;
           isLoading = false;
         });
         print('Response body: ${response.body}');
       } else {
-        throw Exception('Failed to load events');
+        throw Exception('Failed to load stories');
       }
     } catch (e) {
       setState(() {
@@ -48,32 +47,16 @@ class _EventListScreenState extends State<EventListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Top half is white
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous page
+            Navigator.pop(context);
           },
         ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const EventHistoryScreen(),
-                ),
-              );
-            },
-            child: const Text(
-              'Your events',
-              style: TextStyle(color: Colors.black, fontSize: 16),
-            ),
-          ),
-        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +66,7 @@ class _EventListScreenState extends State<EventListScreen> {
             child: Row(
               children: [
                 const Text(
-                  'Events for You',
+                  'Stories for You',
                   style: TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -110,19 +93,19 @@ class _EventListScreenState extends State<EventListScreen> {
               child:
                   isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : events.isEmpty
-                      ? const Center(child: Text('No events found'))
+                      : stories.isEmpty
+                      ? const Center(child: Text('No stories found'))
                       : GridView.builder(
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // 2 columns
+                              crossAxisCount: 2,
                               crossAxisSpacing: 16.0,
                               mainAxisSpacing: 16.0,
-                              childAspectRatio: 0.8, // Adjust card aspect ratio
+                              childAspectRatio: 0.8,
                             ),
-                        itemCount: events.length,
+                        itemCount: stories.length,
                         itemBuilder: (context, index) {
-                          final event = events[index];
+                          final story = stories[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -130,7 +113,7 @@ class _EventListScreenState extends State<EventListScreen> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) =>
-                                          EventDetailScreen(event: event),
+                                          StoryDetailScreen(story: story),
                                 ),
                               );
                             },
@@ -142,7 +125,6 @@ class _EventListScreenState extends State<EventListScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Event Image (already circular)
                                   Container(
                                     width: 100,
                                     height: 100,
@@ -150,25 +132,22 @@ class _EventListScreenState extends State<EventListScreen> {
                                       shape: BoxShape.circle,
                                       image: DecorationImage(
                                         image: NetworkImage(
-                                          event['image'] ??
-                                              'https://i.pinimg.com/736x/05/95/ef/0595ef0dff385eabffc76f847d8df4a9.jpg', // Fallback image
+                                          story['image'] ??
+                                              'https://i.pinimg.com/736x/05/95/ef/0595ef0dff385eabffc76f847d8df4a9.jpg',
                                         ),
                                         fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
                                   const SizedBox(height: 8),
-                                  // Event Title
                                   Text(
-                                    event['title'] ?? 'ELMO',
+                                    story['title'] ?? 'Untitled Story',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  const SizedBox(height: 4),
-
-                                  // Event Price
                                 ],
                               ),
                             ),

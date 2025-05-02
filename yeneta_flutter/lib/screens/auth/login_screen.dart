@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart'; // Ensure this import is present
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,13 +12,73 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    const String apiUrl = 'https://yeneta-api.onrender.com/api/parents/login';
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        final String token = responseData['token'];
+        final String fullName =
+            responseData['user']['fullName']; // Correctly access fullName
+
+        // Store token using shared_preferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        await prefs.setString('fullName', fullName);
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Welcome, $fullName!')));
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        final responseData = jsonDecode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('An error occurred. Please try again.')),
+      );
+    }
   }
 
   @override
@@ -36,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 0.0),
@@ -46,12 +109,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 300,
                 ),
               ),
-              Text(
-                "Welcome Abeba",
+              const Text(
+                "Welcome Back",
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black.withOpacity(0.8),
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 20),
@@ -70,6 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 5),
                     TextFormField(
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         hintText: "example@example.com",
                         filled: true,
@@ -121,6 +185,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 25),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/resetPassword',
+                          ); // Navigate to reset password screen
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     Center(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -133,19 +217,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            Navigator.pushReplacementNamed(context, '/home');
-                          }
-                        },
-                        child: const Text(
-                          "Login",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
+                        onPressed: _isLoading ? null : _login,
+                        child:
+                            _isLoading
+                                ? const CircularProgressIndicator(
+                                  color: Colors.black,
+                                )
+                                : const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                ),
                       ),
                     ),
                     const SizedBox(height: 20),

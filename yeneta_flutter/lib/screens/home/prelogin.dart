@@ -13,19 +13,18 @@ class PreLoginScreen extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 200),
+        padding: const EdgeInsets.only(top: 100),
         child: Column(
           children: [
             Image.asset(
               "assets/images/welcome_image.png",
-              width: 250,
-              height: 250,
+              width: 500,
+              height: 400,
             ),
-            const SizedBox(height: 50),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed:
                   () => {Navigator.pushReplacementNamed(context, '/login')},
-              child: const Text("Login"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFFCB7C), // Button color
                 padding: const EdgeInsets.symmetric(
@@ -34,12 +33,12 @@ class PreLoginScreen extends StatelessWidget {
                 ), // Button padding
                 textStyle: const TextStyle(fontSize: 20), // Button text style
               ),
+              child: const Text("Login"),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed:
                   () => {Navigator.pushReplacementNamed(context, '/register')},
-              child: const Text("Register"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 side: BorderSide(
@@ -54,6 +53,7 @@ class PreLoginScreen extends StatelessWidget {
                 ), // Button padding
                 textStyle: const TextStyle(fontSize: 20), // Button text style
               ),
+              child: const Text("Register"),
             ),
           ],
         ),
