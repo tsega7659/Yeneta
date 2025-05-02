@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:yeneta_flutter/screens/levels/level_selection_screen.dart';
+import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return BaseScaffold(
+      title: 'Home',
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
@@ -42,8 +44,14 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFFF9999), // Light red
                       icon: Icons.calculate,
                       onTap: () {
-                        // Navigate to Maths screen
-                        Navigator.pushNamed(context, '/maths');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    LevelSelectionScreen(subject: "Math"),
+                          ),
+                        );
                       },
                     ),
                     _buildSubjectCard(
@@ -52,8 +60,14 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFD1C4E9), // Light purple
                       icon: Icons.science,
                       onTap: () {
-                        // Navigate to Science screen
-                        Navigator.pushNamed(context, '/science');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    LevelSelectionScreen(subject: "Science"),
+                          ),
+                        );
                       },
                     ),
                     _buildSubjectCard(
@@ -62,8 +76,14 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFB2DFDB), // Light teal
                       icon: Icons.edit,
                       onTap: () {
-                        // Navigate to Amharic screen
-                        Navigator.pushNamed(context, '/amharic');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    LevelSelectionScreen(subject: "Amharic"),
+                          ),
+                        );
                       },
                     ),
                     _buildSubjectCard(
@@ -72,8 +92,14 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFFFECB3), // Light yellow
                       icon: Icons.language,
                       onTap: () {
-                        // Navigate to English screen
-                        Navigator.pushNamed(context, '/english');
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) =>
+                                    LevelSelectionScreen(subject: "English"),
+                          ),
+                        );
                       },
                     ),
                     _buildSubjectCard(
@@ -82,7 +108,6 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFB9EAFB), // Light blue
                       icon: Icons.book,
                       onTap: () {
-                        // Navigate to Stories screen
                         Navigator.pushNamed(context, '/stories');
                       },
                     ),
@@ -92,7 +117,6 @@ class HomeScreen extends StatelessWidget {
                       color: const Color(0xFFF0C6FB), // Light yellow
                       icon: Icons.music_note,
                       onTap: () {
-                        // Navigate to Songs screen
                         Navigator.pushNamed(context, '/songs');
                       },
                     ),
@@ -131,33 +155,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: 32),
-            label: "",
-          ),
-          BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, '/profile');
-              },
-              child: const Icon(Icons.person, size: 32),
-            ),
-            label: "",
-          ),
-        ],
-        selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.orange,
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        type: BottomNavigationBarType.fixed,
-      ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 

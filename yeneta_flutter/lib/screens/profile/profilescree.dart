@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
+    return BaseScaffold(
+      title: 'Profile',
       body: SafeArea(
         child: Container(
           decoration: const BoxDecoration(

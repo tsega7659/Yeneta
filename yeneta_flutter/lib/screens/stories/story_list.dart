@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 
 import 'package:yeneta_flutter/screens/stories/story_detail_screen.dart';
 
@@ -46,18 +47,8 @@ class _StoryListScreenState extends State<StoryListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
+    return BaseScaffold(
+      title: 'Stories',
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -1,20 +1,157 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yeneta_flutter/screens/events/eventhistory.dart';
 
-class EventDetailScreen extends StatelessWidget {
+class EventDetailScreen extends StatefulWidget {
   final dynamic event;
 
   const EventDetailScreen({super.key, required this.event});
 
   @override
+  State<EventDetailScreen> createState() => _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends State<EventDetailScreen> {
+  bool isLoading = false;
+
+  void showPaymentMethodDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Select Payment Method'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Chapa Payment Option
+                ListTile(
+                  leading: Image.asset(
+                    'assets/images/chapa_logo.png',
+                    width: 40,
+                    height: 40,
+                  ),
+                  title: const Text('Chapa'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    rsvpEvent('chapa');
+                  },
+                ),
+                const Divider(),
+                // Telebirr Payment Option
+                ListTile(
+                  leading: Image.asset(
+                    'assets/images/telebirr_logo.jpg',
+                    width: 40,
+                    height: 40,
+                  ),
+                  title: const Text('Telebirr'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    rsvpEvent('telebirr');
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Success!'),
+            content: const Text(
+              'You have successfully reserved your place. We\'ve sent you an email with your ticket code.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close dialog
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EventHistoryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  Future<void> rsvpEvent(String paymentMethod) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+
+      if (token == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please login to RSVP')));
+        return;
+      }
+
+      final response = await http.post(
+        Uri.parse(
+          'https://yeneta-api.onrender.com/api/events/${widget.event['_id']}/rsvp',
+        ),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'paymentMethod': paymentMethod}),
+      );
+
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+        setState(() {
+          isLoading = false;
+        });
+        showSuccessDialog();
+      } else {
+        if (!mounted) return;
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        isLoading = false;
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
+  String formatDate(String dateString) {
+    final date = DateTime.parse(dateString);
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar:
-          true, // Allow the background to extend behind the AppBar
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         title: Text(
-          event['title'] ?? 'Event Detail',
+          widget.event['title'] ?? 'Event Detail',
           style: const TextStyle(color: Colors.black),
         ),
       ),
@@ -22,7 +159,7 @@ class EventDetailScreen extends StatelessWidget {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/bg.jpg'),
-            fit: BoxFit.cover, // Cover the entire screen
+            fit: BoxFit.cover,
           ),
         ),
         child: SafeArea(
@@ -40,8 +177,8 @@ class EventDetailScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         image: NetworkImage(
-                          event['image'] ??
-                              'https://i.pinimg.com/736x/05/95/ef/0595ef0dff385eabffc76f847d8df4a9.jpg', // Fallback image
+                          widget.event['image'] ??
+                              'https://i.pinimg.com/736x/05/95/ef/0595ef0dff385eabffc76f847d8df4a9.jpg',
                         ),
                         fit: BoxFit.cover,
                       ),
@@ -54,7 +191,7 @@ class EventDetailScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      event['title'] ?? 'Elmo is Here',
+                      widget.event['title'] ?? 'Elmo is Here',
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -67,34 +204,32 @@ class EventDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  event['description'] ?? 'Elmo is Here',
+                  widget.event['description'] ?? 'Elmo is Here',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                // Event Date and Location
+                // Event Date
                 Text(
-                  '${event['date'] ?? 'May 7'}, ${event['location'] ?? 'Edna Mall'}',
+                  'Date: ${formatDate(widget.event['dueDate'])}',
                   style: const TextStyle(fontSize: 16, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                // Event Time
+                // Event Capacity
                 Text(
-                  event['time'] ?? '3:00 am, Morning',
+                  'Capacity: ${widget.event['attendanceCapacity']} seats',
                   style: const TextStyle(fontSize: 16, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
                 // RSVP Button
                 ElevatedButton(
-                  onPressed: () {
-                    // Add RSVP functionality here
-                  },
+                  onPressed: isLoading ? null : showPaymentMethodDialog,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00C4B4), // Cyan color
+                    backgroundColor: const Color(0xFF00C4B4),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
@@ -103,14 +238,24 @@ class EventDetailScreen extends StatelessWidget {
                       vertical: 12,
                     ),
                   ),
-                  child: const Text(
-                    'RSVP NOW',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  child:
+                      isLoading
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                          : const Text(
+                            'RSVP NOW',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                 ),
               ],
             ),
