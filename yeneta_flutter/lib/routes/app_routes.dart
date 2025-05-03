@@ -9,7 +9,9 @@ import 'package:yeneta_flutter/screens/home/homescree.dart';
 import 'package:yeneta_flutter/screens/home/splashscreen.dart';
 import 'package:yeneta_flutter/screens/home/prelogin.dart';
 import 'package:yeneta_flutter/screens/profile/profilescree.dart';
+import 'package:yeneta_flutter/screens/song/songs.dart';
 import 'package:yeneta_flutter/screens/stories/story_list.dart';
+import 'package:yeneta_flutter/screens/superstars/superstars%20_list.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -23,6 +25,11 @@ class AppRoutes {
   static const String eventHistory = '/event_history';
   static const String resetPassword = '/resetPassword';
   static const String stories = '/stories';
+  static const String song = '/songs';
+  static const String quiz = '/quiz';
+  static const String levels = '/levels';
+  static const String superstars = '/superstars';
+  static const String superstarDetails = '/superstarDetail';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -50,6 +57,12 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const EventHistoryScreen());
       case stories:
         return MaterialPageRoute(builder: (_) => const StoryListScreen());
+      case song:
+        return MaterialPageRoute(builder: (_) => const SongsScreen());
+      case superstars:
+        return MaterialPageRoute(builder: (_) => const SuperstarsScreen());
+      case superstarDetails:
+        return MaterialPageRoute(builder: (_) => const SuperstarsScreen());
       default:
         return MaterialPageRoute(
           builder:

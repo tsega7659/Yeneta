@@ -36,12 +36,12 @@ class HomeScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 1.0, // Square cards
+                  childAspectRatio: 1.0, 
                   children: [
                     _buildSubjectCard(
                       title: "Maths",
                       subtitle: "40 topics",
-                      color: const Color(0xFFFF9999), // Light red
+                      color: const Color(0xFFFF9999), 
                       icon: Icons.calculate,
                       onTap: () {
                         Navigator.push(
@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "SCIENCE",
                       subtitle: "45 topics",
-                      color: const Color(0xFFD1C4E9), // Light purple
+                      color: const Color(0xFFD1C4E9), 
                       icon: Icons.science,
                       onTap: () {
                         Navigator.push(
@@ -73,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Amharic",
                       subtitle: "30 topics",
-                      color: const Color(0xFFB2DFDB), // Light teal
+                      color: const Color(0xFFB2DFDB), 
                       icon: Icons.edit,
                       onTap: () {
                         Navigator.push(
@@ -89,7 +89,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "English",
                       subtitle: "20 videos",
-                      color: const Color(0xFFFFECB3), // Light yellow
+                      color: const Color(0xFFFFECB3), 
                       icon: Icons.language,
                       onTap: () {
                         Navigator.push(
@@ -105,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Stories",
                       subtitle: "",
-                      color: const Color(0xFFB9EAFB), // Light blue
+                      color: const Color(0xFFB9EAFB), 
                       icon: Icons.book,
                       onTap: () {
                         Navigator.pushNamed(context, '/stories');
@@ -114,7 +114,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Songs",
                       subtitle: "",
-                      color: const Color(0xFFF0C6FB), // Light yellow
+                      color: const Color(0xFFF0C6FB), 
                       icon: Icons.music_note,
                       onTap: () {
                         Navigator.pushNamed(context, '/songs');
