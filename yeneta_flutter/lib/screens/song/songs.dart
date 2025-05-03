@@ -39,6 +39,7 @@ class SongsScreen extends StatefulWidget {
 class _SongsScreenState extends State<SongsScreen> {
   late Future<List<Song>> futureSongs;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  String? currentlyPlaying; // Track the currently playing song
 
   @override
   void initState() {
@@ -60,16 +61,26 @@ class _SongsScreenState extends State<SongsScreen> {
     }
   }
 
-  Future<void> playSong(String url) async {
-  try {
-    print("Initializing audio player...");
-    await _audioPlayer.setUrl(url);
-    print("Playing song...");
-    await _audioPlayer.play();
-  } catch (e) {
-    print("Error playing song: $e");
+  Future<void> playOrStopSong(String url) async {
+    try {
+      if (currentlyPlaying == url && _audioPlayer.playing) {
+        // Stop the song if it's already playing
+        await _audioPlayer.stop();
+        setState(() {
+          currentlyPlaying = null;
+        });
+      } else {
+        // Play the selected song
+        await _audioPlayer.setUrl(url);
+        await _audioPlayer.play();
+        setState(() {
+          currentlyPlaying = url;
+        });
+      }
+    } catch (e) {
+      print("Error playing song: $e");
+    }
   }
-}
 
   @override
   void dispose() {
@@ -158,7 +169,7 @@ class _SongsScreenState extends State<SongsScreen> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           trailing: ElevatedButton(
-                            onPressed: () => playSong(song.audio),
+                            onPressed: () => playOrStopSong(song.audio),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   index % 2 == 0
@@ -168,9 +179,12 @@ class _SongsScreenState extends State<SongsScreen> {
                                 borderRadius: BorderRadius.circular(20.0),
                               ),
                             ),
-                            child: const Text(
-                              'play',
-                              style: TextStyle(color: Colors.black),
+                            child: Text(
+                              currentlyPlaying == song.audio &&
+                                      _audioPlayer.playing
+                                  ? 'Stop'
+                                  : 'Play',
+                              style: const TextStyle(color: Colors.black),
                             ),
                           ),
                         ),

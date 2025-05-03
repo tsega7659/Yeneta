@@ -249,7 +249,7 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://yeneta-api.onrender.com/api/quizes?subject=$subject&level=$level',
+          'https://yeneta-api.onrender.com/api/quizes?subject=$subject',
         ),
         headers: {'Authorization': 'Bearer $token'},
       );
