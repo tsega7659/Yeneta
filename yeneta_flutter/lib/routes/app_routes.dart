@@ -8,8 +8,11 @@ import 'package:yeneta_flutter/screens/events/eventhistory.dart';
 import 'package:yeneta_flutter/screens/home/homescree.dart';
 import 'package:yeneta_flutter/screens/home/splashscreen.dart';
 import 'package:yeneta_flutter/screens/home/prelogin.dart';
+import 'package:yeneta_flutter/screens/leaderboard/leadreboard.dart';
 import 'package:yeneta_flutter/screens/profile/profilescree.dart';
+import 'package:yeneta_flutter/screens/score/score_screen.dart';
 import 'package:yeneta_flutter/screens/song/songs.dart';
+import 'package:yeneta_flutter/screens/stickers/stickers_screen.dart';
 import 'package:yeneta_flutter/screens/stories/story_list.dart';
 import 'package:yeneta_flutter/screens/superstars/superstars%20_list.dart';
 
@@ -30,6 +33,10 @@ class AppRoutes {
   static const String levels = '/levels';
   static const String superstars = '/superstars';
   static const String superstarDetails = '/superstarDetail';
+  static const String leaderboard = '/leaders';
+  static const String stickers = '/stickers';
+  static const String certificates = '/certificates';
+  static const String score = '/score';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -44,7 +51,7 @@ class AppRoutes {
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case profile:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute(builder: (_) => const Profilescreen());
       case events:
         return MaterialPageRoute(builder: (_) => const EventListScreen());
       case resetPassword:
@@ -63,6 +70,13 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SuperstarsScreen());
       case superstarDetails:
         return MaterialPageRoute(builder: (_) => const SuperstarsScreen());
+      case leaderboard:
+        return MaterialPageRoute(builder: (_) => const LeaderboardScreen());
+      case score:
+        return MaterialPageRoute(builder: (_) => const StudentReportScreen());
+      case stickers:
+        return MaterialPageRoute(builder: (_) => const MyStickersScreen());
+
       default:
         return MaterialPageRoute(
           builder:

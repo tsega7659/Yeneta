@@ -41,12 +41,8 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
       print('Error: $e');
     }
   }
-
-  // Function to calculate countdown or determine if the event has passed
   String getEventStatus(String? eventDate) {
     if (eventDate == null) return 'Unknown';
-
-    // Parse the event date (assuming the API returns a date in 'yyyy-MM-dd' format)
     DateTime? parsedDate;
     try {
       parsedDate = DateTime.parse(eventDate);
@@ -54,13 +50,12 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
       return 'Invalid Date';
     }
 
-    final now = DateTime.now(); // Current date: April 29, 2025
+    final now = DateTime.now(); 
     final difference = parsedDate.difference(now);
 
     if (difference.isNegative) {
       return 'Already passed';
     } else {
-      // Calculate countdown
       final days = difference.inDays;
       final hours = difference.inHours % 24;
       final minutes = difference.inMinutes % 60;
@@ -72,7 +67,7 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor:
-          Colors.pink[100], // Pink background for the entire screen
+          Colors.pink[100], 
       appBar: AppBar(
         backgroundColor: Colors.pink[100],
         elevation: 0,
@@ -125,7 +120,6 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            // Event Image
                             Container(
                               width: 50,
                               height: 50,
@@ -151,7 +145,6 @@ class _EventHistoryScreenState extends State<EventHistoryScreen> {
                                 ),
                               ),
                             ),
-                            // Event Status (Countdown or "Already passed")
                             Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,

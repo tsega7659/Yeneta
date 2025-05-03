@@ -48,14 +48,17 @@ class _EventListScreenState extends State<EventListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Top half is white
+      backgroundColor: Colors.white, 
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Navigate back to the previous page
+            Navigator.pushNamed(
+              context,
+              '/home',
+            ); 
           },
         ),
         actions: [
@@ -118,7 +121,7 @@ class _EventListScreenState extends State<EventListScreen> {
                               crossAxisCount: 2, // 2 columns
                               crossAxisSpacing: 16.0,
                               mainAxisSpacing: 16.0,
-                              childAspectRatio: 0.8, // Adjust card aspect ratio
+                              childAspectRatio: 0.8,
                             ),
                         itemCount: events.length,
                         itemBuilder: (context, index) {
@@ -142,7 +145,6 @@ class _EventListScreenState extends State<EventListScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Event Image (already circular)
                                   Container(
                                     width: 100,
                                     height: 100,
@@ -167,8 +169,6 @@ class _EventListScreenState extends State<EventListScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-
-                                  // Event Price
                                 ],
                               ),
                             ),

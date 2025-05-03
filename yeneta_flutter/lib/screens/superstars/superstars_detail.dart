@@ -2,13 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 
 class SuperstarsDetail extends StatelessWidget {
-    final dynamic superstar;
-  const SuperstarsDetail({super.key,  required this.superstar});
+  final dynamic superstar;
+  const SuperstarsDetail({super.key, required this.superstar});
 
-   @override
+  @override
   Widget build(BuildContext context) {
+    // Debugging: Print the superstar object to verify its structure
+    print(superstar);
+
+    // Ensure superstar is a Map
+    if (superstar is! Map) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'Invalid data format for superstar',
+            style: TextStyle(fontSize: 18, color: Colors.red),
+          ),
+        ),
+      );
+    }
+
     return BaseScaffold(
-      title: 'superstar Detail',
+      title: 'Superstar Detail',
       extendBodyBehindAppBar: true,
       showAppBar: true,
       body: Column(
@@ -47,7 +62,7 @@ class SuperstarsDetail extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          superstar['title'] ?? 'Untitled superstar',
+                          superstar['title'] ?? 'Untitled Superstar',
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -56,7 +71,6 @@ class SuperstarsDetail extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
                     const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(16),

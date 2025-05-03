@@ -25,7 +25,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Chapa Payment Option
                 ListTile(
                   leading: Image.asset(
                     'assets/images/chapa_logo.png',
@@ -35,11 +34,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   title: const Text('Chapa'),
                   onTap: () {
                     Navigator.pop(context);
-                    rsvpEvent('chapa');
+                    rsvpEvent('Chapa');
                   },
                 ),
                 const Divider(),
-                // Telebirr Payment Option
                 ListTile(
                   leading: Image.asset(
                     'assets/images/telebirr_logo.jpg',
@@ -49,7 +47,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   title: const Text('Telebirr'),
                   onTap: () {
                     Navigator.pop(context);
-                    rsvpEvent('telebirr');
+                    rsvpEvent('Telebirr');
                   },
                 ),
               ],
@@ -58,19 +56,19 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 
-  void showSuccessDialog() {
+  void showSuccessDialog(String paymentMethod) {
     showDialog(
       context: context,
       builder:
           (context) => AlertDialog(
             title: const Text('Success!'),
-            content: const Text(
-              'You have successfully reserved your place. We\'ve sent you an email with your ticket code.',
+            content: Text(
+              'You have successfully reserved your place using $paymentMethod. We\'ve sent you an email with your ticket code.',
             ),
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(context);
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -95,11 +93,19 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       final token = prefs.getString('auth_token');
 
       if (token == null) {
+        if (!mounted) return;
+        setState(() {
+          isLoading = false;
+        });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(const SnackBar(content: Text('Please login to RSVP')));
         return;
       }
+
+      print('Token: $token');
+      print('Event ID: ${widget.event['_id']}');
+      print('Selected Payment Method (for display only): $paymentMethod');
 
       final response = await http.post(
         Uri.parse(
@@ -108,30 +114,37 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
-        body: jsonEncode({'paymentMethod': paymentMethod}),
+        body: jsonEncode({'eventId': widget.event['_id']}),
       );
+
+      print('Response Status: ${response.statusCode}');
+      print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
         if (!mounted) return;
         setState(() {
           isLoading = false;
         });
-        showSuccessDialog();
+        showSuccessDialog(paymentMethod);
       } else {
         if (!mounted) return;
         setState(() {
           isLoading = false;
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${response.statusCode} - ${response.body}'),
+          ),
+        );
       }
     } catch (e) {
       if (!mounted) return;
       setState(() {
         isLoading = false;
       });
+      print('Exception: $e');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -168,7 +181,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Event Image
                 Center(
                   child: Container(
                     width: 200,
@@ -186,7 +198,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Event Title with Heart Icon
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -211,21 +222,18 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                // Event Date
                 Text(
                   'Date: ${formatDate(widget.event['dueDate'])}',
                   style: const TextStyle(fontSize: 16, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                // Event Capacity
                 Text(
                   'Capacity: ${widget.event['attendanceCapacity']} seats',
                   style: const TextStyle(fontSize: 16, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
-                // RSVP Button
                 ElevatedButton(
                   onPressed: isLoading ? null : showPaymentMethodDialog,
                   style: ElevatedButton.styleFrom(

@@ -39,7 +39,7 @@ class SongsScreen extends StatefulWidget {
 class _SongsScreenState extends State<SongsScreen> {
   late Future<List<Song>> futureSongs;
   final AudioPlayer _audioPlayer = AudioPlayer();
-  String? currentlyPlaying; // Track the currently playing song
+  String? currentlyPlaying; 
 
   @override
   void initState() {
@@ -54,7 +54,7 @@ class _SongsScreenState extends State<SongsScreen> {
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
       final List<dynamic> songsData =
-          jsonResponse['songs'] ?? []; // Extract the 'songs' list
+          jsonResponse['songs'] ?? [];
       return songsData.map((song) => Song.fromJson(song)).toList();
     } else {
       throw Exception('Failed to load songs');
@@ -64,13 +64,11 @@ class _SongsScreenState extends State<SongsScreen> {
   Future<void> playOrStopSong(String url) async {
     try {
       if (currentlyPlaying == url && _audioPlayer.playing) {
-        // Stop the song if it's already playing
         await _audioPlayer.stop();
         setState(() {
           currentlyPlaying = null;
         });
       } else {
-        // Play the selected song
         await _audioPlayer.setUrl(url);
         await _audioPlayer.play();
         setState(() {

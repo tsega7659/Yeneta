@@ -55,8 +55,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = json.decode(response.body);
         tutorials =
-            responseData['tutorials'] ?? []; // Extract the 'tutorials' list
-        // Extract unique levels and their titles
+            responseData['tutorials'] ?? []; 
         final levelMap = <int, String>{};
         for (final t in tutorials) {
           if (t['level'] != null && t['title'] != null) {
@@ -110,12 +109,12 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = [
-      Color(0xFFB9F6CA), // Green
-      Color(0xFFB2EBF2), // Blue
-      Color(0xFFFFCDD2), // Red
-      Color(0xFFFFF9C4), // Yellow
-      Color(0xFFB3E5FC), // Light Blue
-      Color(0xFFE1BEE7), // Purple
+      Color(0xFFB9F6CA), 
+      Color(0xFFB2EBF2), 
+      Color(0xFFFFCDD2), 
+      Color(0xFFFFF9C4), 
+      Color(0xFFB3E5FC), 
+      Color(0xFFE1BEE7), 
     ];
 
     return BaseScaffold(

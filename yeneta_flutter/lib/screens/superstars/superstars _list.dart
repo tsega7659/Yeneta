@@ -103,7 +103,7 @@ class _SuperstarsScreenState extends State<SuperstarsScreen> {
                                 MaterialPageRoute(
                                   builder:
                                       (context) =>
-                                          SuperstarsDetail(superstar: superstars),
+                                          SuperstarsDetail(superstar: story),
                                 ),
                               );
                             },

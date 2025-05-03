@@ -1,9 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yeneta_flutter/screens/levels/level_selection_screen.dart';
 import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String userName = "Kid";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('fullName') ?? "Kid";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +37,12 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Greeting Text
-              const Text(
-                "Hi, Abeba",
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              Text(
+                "Hi, $userName",
+                style: const TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 15),
               const Text(
@@ -36,12 +60,12 @@ class HomeScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
-                  childAspectRatio: 1.0, 
+                  childAspectRatio: 1.0,
                   children: [
                     _buildSubjectCard(
                       title: "Maths",
                       subtitle: "40 topics",
-                      color: const Color(0xFFFF9999), 
+                      color: const Color(0xFFFF9999),
                       icon: Icons.calculate,
                       onTap: () {
                         Navigator.push(
@@ -57,7 +81,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "SCIENCE",
                       subtitle: "45 topics",
-                      color: const Color(0xFFD1C4E9), 
+                      color: const Color(0xFFD1C4E9),
                       icon: Icons.science,
                       onTap: () {
                         Navigator.push(
@@ -73,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Amharic",
                       subtitle: "30 topics",
-                      color: const Color(0xFFB2DFDB), 
+                      color: const Color(0xFFB2DFDB),
                       icon: Icons.edit,
                       onTap: () {
                         Navigator.push(
@@ -89,7 +113,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "English",
                       subtitle: "20 videos",
-                      color: const Color(0xFFFFECB3), 
+                      color: const Color(0xFFFFECB3),
                       icon: Icons.language,
                       onTap: () {
                         Navigator.push(
@@ -105,7 +129,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Stories",
                       subtitle: "",
-                      color: const Color(0xFFB9EAFB), 
+                      color: const Color(0xFFB9EAFB),
                       icon: Icons.book,
                       onTap: () {
                         Navigator.pushNamed(context, '/stories');
@@ -114,7 +138,7 @@ class HomeScreen extends StatelessWidget {
                     _buildSubjectCard(
                       title: "Songs",
                       subtitle: "",
-                      color: const Color(0xFFF0C6FB), 
+                      color: const Color(0xFFF0C6FB),
                       icon: Icons.music_note,
                       onTap: () {
                         Navigator.pushNamed(context, '/songs');

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart'; // Ensure this import is present
+import 'package:shared_preferences/shared_preferences.dart'; 
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -53,9 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
         final responseData = jsonDecode(response.body);
         final String token = responseData['token'];
         final String fullName =
-            responseData['user']['fullName']; // Correctly access fullName
-
-        // Store token using shared_preferences
+            responseData['user']['fullName']; 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         await prefs.setString('fullName', fullName);
@@ -192,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.pushNamed(
                             context,
                             '/resetPassword',
-                          ); // Navigate to reset password screen
+                          );
                         },
                         child: const Text(
                           "Forgot Password?",

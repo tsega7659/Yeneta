@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yeneta_flutter/screens/quizzes/quize_screen.dart';
 import 'package:yeneta_flutter/widgets/base_scaffold.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -35,7 +36,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
-                  'assets/images/completion_image.png', // Replace with your image
+                  'assets/images/completion_image.png',
                   height: 100,
                 ),
                 const SizedBox(height: 20),
@@ -48,7 +49,7 @@ class _TutorialScreenState extends State<TutorialScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Text('Good job, Abeba!', style: TextStyle(fontSize: 18)),
+                const Text('Good job!', style: TextStyle(fontSize: 18)),
                 const SizedBox(height: 10),
                 const Text(
                   'Reward',
@@ -56,13 +57,13 @@ class _TutorialScreenState extends State<TutorialScreen> {
                 ),
                 const SizedBox(height: 10),
                 Image.asset(
-                  'assets/images/reward_candy.png', // Replace with your reward image
+                  'assets/images/candy.png', 
                   height: 50,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close the popup
+                    Navigator.pop(context);
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
@@ -249,7 +250,7 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://yeneta-api.onrender.com/api/quizes?subject=$subject',
+          'https://yeneta-api.onrender.com/api/quizes?subject=$subject&level=$level',
         ),
         headers: {'Authorization': 'Bearer $token'},
       );
@@ -265,12 +266,20 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
             const SnackBar(content: Text('No quiz found for this level')),
           );
         } else {
+          // Extract questions from the quizzes
+          final List<dynamic> questions =
+              quizzes
+                  .expand(
+                    (quiz) => (quiz['questions'] ?? []) as Iterable<dynamic>,
+                  )
+                  .toList();
+
           Navigator.push(
             context,
             MaterialPageRoute(
               builder:
                   (context) => QuizScreen(
-                    quizzes: quizzes,
+                    quizzes: questions,
                     subject: widget.subject,
                     level: widget.level,
                   ),
@@ -303,7 +312,7 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context); // Go back
+            Navigator.pop(context); 
           },
         ),
       ),
@@ -333,7 +342,7 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context); // Go back
+                    Navigator.pop(context); 
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFFFA5B8),
@@ -372,217 +381,6 @@ class _ReadyToQuizScreenState extends State<ReadyToQuizScreen> {
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class QuizScreen extends StatefulWidget {
-  final String subject;
-  final int level;
-  final List quizzes;
-  const QuizScreen({
-    super.key,
-    required this.subject,
-    required this.level,
-    required this.quizzes,
-  });
-
-  @override
-  State<QuizScreen> createState() => _QuizScreenState();
-}
-
-class _QuizScreenState extends State<QuizScreen> {
-  int currentIndex = 0;
-  int? selectedOption;
-  bool showAnswer = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final quizList = widget.quizzes;
-    if (quizList.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(),
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/bg.jpg"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: const Center(
-            child: Text(
-              'No quiz found for this level.',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      );
-    }
-    final quiz = quizList[currentIndex];
-    final question = quiz['question'] ?? '';
-    final options = quiz['options'] ?? [];
-    final correctIndex = quiz['correctIndex'];
-
-    return Scaffold(
-      appBar: AppBar(title: Text('Quiz ${currentIndex + 1}')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: List.generate(
-                quizList.length,
-                (i) => Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: i == currentIndex ? Colors.pink : Colors.grey[300],
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      '${i + 1}',
-                      style: TextStyle(
-                        color: i == currentIndex ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              question,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 24),
-            ...List.generate(options.length, (i) {
-              final optionLetter = String.fromCharCode(65 + i);
-              final isSelected = selectedOption == i;
-              final isCorrect = showAnswer && correctIndex == i;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: GestureDetector(
-                  onTap:
-                      showAnswer
-                          ? null
-                          : () {
-                            setState(() {
-                              selectedOption = i;
-                            });
-                          },
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color:
-                          isCorrect
-                              ? Colors.green[200]
-                              : isSelected
-                              ? Colors.pink[100]
-                              : i % 2 == 0
-                              ? Colors.teal[100]
-                              : Colors.pink[100],
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: isSelected ? Colors.pink : Colors.transparent,
-                        width: 2,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 16),
-                        Text(
-                          optionLetter,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            options[i],
-                            style: const TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.pink[200],
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 60,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                onPressed:
-                    selectedOption == null
-                        ? null
-                        : () {
-                          setState(() {
-                            showAnswer = true;
-                          });
-                        },
-                child: const Text(
-                  'Answer',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-            const Spacer(),
-            if (showAnswer)
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[200],
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 60,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                  onPressed:
-                      currentIndex < quizList.length - 1
-                          ? () {
-                            setState(() {
-                              currentIndex++;
-                              selectedOption = null;
-                              showAnswer = false;
-                            });
-                          }
-                          : null,
-                  child: Text(
-                    currentIndex < quizList.length - 1 ? 'Next' : 'Finish',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-            const SizedBox(height: 16),
           ],
         ),
       ),

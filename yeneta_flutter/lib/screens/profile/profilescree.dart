@@ -1,8 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:yeneta_flutter/widgets/base_scaffold.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+import 'package:shared_preferences/shared_preferences.dart';
+
+class Profilescreen extends StatefulWidget {
+  const Profilescreen({super.key});
+
+  @override
+  State<Profilescreen> createState() => _ProfilescreenState();
+}
+
+class _ProfilescreenState extends State<Profilescreen> {
+  String userName = "User"; 
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName =
+          prefs.getString('fullName') ??
+          "User"; 
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,13 +43,12 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Profile Header
               Container(
                 padding: const EdgeInsets.only(top: 100),
                 child: Column(
                   children: [
                     const CircleAvatar(
-                      radius: 80, // Increased size of the avatar
+                      radius: 80,
                       backgroundImage: AssetImage(
                         "assets/images/profile_image.png",
                       ),
@@ -32,14 +56,14 @@ class ProfileScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
-                          "Hi Abeba Abebe",
-                          style: TextStyle(
+                        Text(
+                          "Hi, $userName",
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 5), // Adjusted spacing
+                        const SizedBox(width: 5),
                         Image.asset(
                           "assets/images/love.png",
                           width: 50,
@@ -50,16 +74,14 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 10), // Reduced spacing
-              // Grid Menu
+              const SizedBox(height: 10),
               GridView.count(
-                shrinkWrap: true, // Prevents GridView from expanding
+                shrinkWrap: true,
                 crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                physics:
-                    const NeverScrollableScrollPhysics(), // Disable scrolling
+                physics: const NeverScrollableScrollPhysics(),
                 children: [
                   _buildMenuItem(
                     icon: Icons.home,
@@ -93,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                     icon: Icons.card_membership,
                     label: "Certificates",
                     onTap: () {
-                      Navigator.pushNamed(context, '/certificates');
+                      _showComingSoonDialog(context);
                     },
                   ),
                   _buildMenuItem(
@@ -105,19 +127,18 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 70), // Adjusted spacing
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF73DBD5), // Light teal
+                    backgroundColor: const Color(0xFF73DBD5),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/premium');
+                    showPaymentMethodDialog(context);
                   },
                   child: const Center(
                     child: Text(
@@ -151,7 +172,7 @@ class ProfileScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: const Color(0xFFEE8B60), // Light orange
+            backgroundColor: const Color(0xFFEE8B60),
             child: Icon(icon, size: 30, color: Colors.white),
           ),
           const SizedBox(height: 5),
@@ -163,4 +184,126 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void showPaymentMethodDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder:
+        (context) => AlertDialog(
+          title: const Text('Select Payment Method'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/chapa_logo.png',
+                  width: 40,
+                  height: 40,
+                ),
+                title: const Text('Chapa'),
+                onTap: () {
+                  Navigator.pop(context); 
+                  _showSuccessDialog(context, 'Chapa');
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: Image.asset(
+                  'assets/images/telebirr_logo.jpg',
+                  width: 40,
+                  height: 40,
+                ),
+                title: const Text('Telebirr'),
+                onTap: () {
+                  Navigator.pop(context); 
+                  _showSuccessDialog(context, 'Telebirr');
+                },
+              ),
+            ],
+          ),
+        ),
+  );
+}
+
+void _showSuccessDialog(BuildContext context, String paymentMethod) {
+  showDialog(
+    context: context,
+    builder:
+        (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 80),
+              const SizedBox(height: 16),
+              Text(
+                'Payment via $paymentMethod Successful!',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext); 
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEE8B60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('OK', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+  );
+}
+
+void _showComingSoonDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder:
+        (dialogContext) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.info, color: Color(0xFFEE8B60), size: 80),
+              const SizedBox(height: 16),
+              const Text(
+                'Certificates Page is Coming Soon!',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFEE8B60),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext); 
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFEE8B60),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('OK', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+  );
 }
