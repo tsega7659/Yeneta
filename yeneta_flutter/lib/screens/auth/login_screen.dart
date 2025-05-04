@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -52,8 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         final String token = responseData['token'];
-        final String fullName =
-            responseData['user']['fullName']; 
+        final String fullName = responseData['user']['fullName'];
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('auth_token', token);
         await prefs.setString('fullName', fullName);
@@ -73,9 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
         _isLoading = false;
       });
       print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred. Please try again.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Login error: $e')));
     }
   }
 
@@ -187,10 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       alignment: Alignment.centerRight,
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/resetPassword',
-                          );
+                          Navigator.pushNamed(context, '/resetPassword');
                         },
                         child: const Text(
                           "Forgot Password?",
