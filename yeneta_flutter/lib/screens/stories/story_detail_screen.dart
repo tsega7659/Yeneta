@@ -40,7 +40,7 @@ class StoryDetailScreen extends StatelessWidget {
                 ),
               ),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -57,8 +57,8 @@ class StoryDetailScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 0),
+
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(

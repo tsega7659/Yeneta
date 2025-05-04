@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:yeneta_flutter/widgets/base_scaffold.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +11,7 @@ class Profilescreen extends StatefulWidget {
 }
 
 class _ProfilescreenState extends State<Profilescreen> {
-  String userName = "User"; 
+  String userName = "User";
 
   @override
   void initState() {
@@ -23,9 +22,7 @@ class _ProfilescreenState extends State<Profilescreen> {
   Future<void> _loadUserName() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      userName =
-          prefs.getString('fullName') ??
-          "User"; 
+      userName = prefs.getString('fullName') ?? "User";
     });
   }
 
@@ -203,7 +200,7 @@ void showPaymentMethodDialog(BuildContext context) {
                 ),
                 title: const Text('Chapa'),
                 onTap: () {
-                  Navigator.pop(context); 
+                  Navigator.pop(context);
                   _showSuccessDialog(context, 'Chapa');
                 },
               ),
@@ -216,7 +213,7 @@ void showPaymentMethodDialog(BuildContext context) {
                 ),
                 title: const Text('Telebirr'),
                 onTap: () {
-                  Navigator.pop(context); 
+                  Navigator.pop(context);
                   _showSuccessDialog(context, 'Telebirr');
                 },
               ),
@@ -251,7 +248,7 @@ void _showSuccessDialog(BuildContext context, String paymentMethod) {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(dialogContext); 
+                  Navigator.pop(dialogContext);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFEE8B60),
@@ -278,7 +275,7 @@ void _showComingSoonDialog(BuildContext context) {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.info, color: Color(0xFFEE8B60), size: 80),
+              const Icon(Icons.face, color: Color(0xFFEE8B60), size: 80),
               const SizedBox(height: 16),
               const Text(
                 'Certificates Page is Coming Soon!',
@@ -292,7 +289,7 @@ void _showComingSoonDialog(BuildContext context) {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(dialogContext); 
+                  Navigator.pop(dialogContext);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFEE8B60),

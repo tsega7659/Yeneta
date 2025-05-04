@@ -19,13 +19,13 @@ class QuizScreen extends StatefulWidget {
 class _QuizScreenState extends State<QuizScreen> {
   int currentIndex = 0;
   int? selectedOption;
-  int score = 0; 
+  int score = 0;
   bool showAnswer = false;
 
   void _showPopup(bool isCorrect) {
     showDialog(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -51,7 +51,7 @@ class _QuizScreenState extends State<QuizScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context); 
+                  Navigator.pop(context);
                   if (currentIndex < widget.quizzes.length - 1) {
                     setState(() {
                       currentIndex++;
@@ -59,7 +59,7 @@ class _QuizScreenState extends State<QuizScreen> {
                       showAnswer = false;
                     });
                   } else {
-                    _showCompletionPopup(); 
+                    _showCompletionPopup();
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -91,10 +91,7 @@ class _QuizScreenState extends State<QuizScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset(
-                  'assets/images/completion_image.png',
-                  height: 100,
-                ),
+                Image.asset('assets/images/completion_image.png', height: 100),
                 const SizedBox(height: 20),
                 const Text(
                   'Level Complete',
@@ -115,15 +112,11 @@ class _QuizScreenState extends State<QuizScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 10),
-                Image.asset(
-                  'assets/images/candy.png', 
-                  height: 50,
-                ),
+                Image.asset('assets/images/candy.png', height: 50),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context); 
+                    Navigator.pushReplacementNamed(context, '/home');
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
@@ -285,7 +278,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           );
                           final isCorrect = selectedLetter == correctAnswer;
                           if (isCorrect) {
-                            score++; 
+                            score++;
                           }
                           _showPopup(isCorrect);
                         },

@@ -31,7 +31,7 @@ class SuperstarsDetail extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 70),
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: MediaQuery.of(context).size.height * 0.5,
               width: double.infinity,
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -71,7 +71,7 @@ class SuperstarsDetail extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 0),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
